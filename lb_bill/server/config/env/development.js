@@ -17,8 +17,13 @@ module.exports = {
    * environment (see config/connections.js and config/models.js )           *
    ***************************************************************************/
 
-  // models: {
-  //   connection: 'someMongodbServer'
-  // }
+    stormpath:{
+        STORMPATH_CLIENT_APIKEY_ID: "3CZQLBCTRICRENBZOB8HJ1627",
+        STORMPATH_CLIENT_APIKEY_SECRET: "R32CCacviZpaD0dm6vQQX65bFxG0Taiv+ns7zVYKvq4",
+        STORMPATH_APPLICATION_HREF: "https://api.stormpath.com/v1/applications/y4aMb78mCMwNCGy4efqBt"
+    },
 
+    crypto: {
+        CRYPTO_KEY: 'HpFNfvyWuVMuUK8c'
+    }
 };

@@ -32,18 +32,9 @@ module.exports.routes = {
   *                                                                          *
   ***************************************************************************/
 
-  '/': {
-    view: 'homepage'
-  }
-
-  /***************************************************************************
-  *                                                                          *
-  * Custom routes here...                                                    *
-  *                                                                          *
-  * If a request to a URL doesn't match any of the custom routes above, it   *
-  * is matched against Sails route blueprints. See `config/blueprints.js`    *
-  * for configuration options and examples.                                  *
-  *                                                                          *
-  ***************************************************************************/
+  'POST /user/login': 'User_authController.authUser',
+  'POST /user/create': 'User_authController.createUser',
+  'POST /user/send_reset': 'User_authController.sendUserReset',
+  'POST /user/reset': 'User_authController.resetPassword'
 
 };
