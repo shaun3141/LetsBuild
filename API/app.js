@@ -58,7 +58,7 @@ app.post('/job', (req, res) => {
 		.incrAsync('job:id')
 		.then((res) => {
 			jobId = res;
-			return redisClient.hmsetAsync('job' + jobId, {status: 'new'});
+			return redisClient.hmsetAsync('job' + jobId, {status: 'IN_PROGRESS'});
 		})
 		.then(() => queueService.createQueueIfNotExistsAsync(process.env.JOB_QUEUE_NAME))
 		.then(() => queueService.createQueueIfNotExistsAsync(process.env.ZIP_QUEUE_NAME))
@@ -89,6 +89,7 @@ app.post('/job', (req, res) => {
 			return ret;
 		})
 		.then(() => queueService.createMessageAsync(process.env.JOB_QUEUE_NAME, jobId))
+        .then(() => new sql.Request().query(`INSERT INTO jobs (id, status) VALUES (${jobId}, 'IN_PROGRESS')`))
 		.then(() => {
 			res.json({
 				jobId: 	jobId
