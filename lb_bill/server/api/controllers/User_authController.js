@@ -9,6 +9,7 @@ var node_cryptojs = require('node-cryptojs-aes');
 var CryptoJS = node_cryptojs.CryptoJS;
 var JsonFormatter = node_cryptojs.JsonFormatter;
 var stormpath = require('stormpath');
+var request = require("request");
 
 module.exports = {
 
@@ -59,6 +60,33 @@ module.exports = {
       }, function(err) {
         console.log('Finished iterating over accounts.');
       });
+    });
+  },
+
+  verifyEmail: function(req,res){
+    var data = req.body;
+    var sptoken = data.sptoken;
+
+    request.post({url:"https://api.stormpath.com/v1/accounts/emailVerificationTokens/"+sptoken},function(err,response,body){
+      if (err){
+        console.log(err);
+        res.send(503,{error:err.userMessage});
+      }else{
+        res.send(200,{success:true});
+      }
+    });
+  },
+
+  resendVerifyEmail: function(req,res){
+    var data = req.body;
+    var email = data.email;
+
+    request({url:STORMPATH_APPLICATION_HREF+"/verificationEmails",form:{login:email}},function(err,response,body){
+      if (err){
+        res.send(503,{error:err.userMessage});
+      }else{
+        res.send(200,{success:true});
+      }
     });
   },
 
