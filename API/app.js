@@ -26,24 +26,32 @@ let sqlConnection = sql.connect({
 	}
 });
 
-let queueService = azure.createQueueService();
+let queueService = azure.createQueueService(process.env.AZURE_STORAGE_CONNECTION_STRING);
 
 let app = express();
 app.use(bodyParser.json());
+app.listen(process.env.port || 1234, () => console.log("Listening..."));
+
 
 /*
-Start off a scrape job
-Expect the body to be:
+Start off a scrape job and return id or error
 
-{
+Input:
+    {
 	"region": {
-		"min": {lat: xxx, lon: xxx},
-		"max": {lat:xxx, lon:xxx}},
+	    "min": {"lat": xxx, "lon": xxx},
+	    "max": {"lat": xxx, "lon": xxx}
+	},
 	"keywords": "yyy"
-}
-
+    }
+Output:
+    200:
+    { "jobId": xxx }
+    400/500:
+    { "error": xxx }
 */
 app.post('/job', (req, res) => {
+
 	// Make sure the body is valid
 	if (!isValidBody(req.body)) {
 		res.status(400).json({
@@ -52,58 +60,20 @@ app.post('/job', (req, res) => {
 		return;
 	}
 	
-	let jobId = null;
-	
-	redisClient
-		.incrAsync('job:id')
-		.then((res) => {
-			jobId = res;
-			return redisClient.hmsetAsync('job' + jobId, {status: 'IN_PROGRESS'});
-		})
-		.then(() => queueService.createQueueIfNotExistsAsync(process.env.JOB_QUEUE_NAME))
-		.then(() => queueService.createQueueIfNotExistsAsync(process.env.ZIP_QUEUE_NAME))
-		.then(() => sqlConnection)
-		// We already know the lats and lons are valid
-		.then(() => new sql.Request().query(`SELECT Zipcode FROM zipcodes WHERE 
-																Lat <= ${req.body.region.max.lat} AND
-																Lat >= ${req.body.region.min.lat} AND
-																Lng <= ${req.body.region.max.lon} AND
-																Lng >= ${req.body.region.min.lon}`))
-		.then((results) => {
-			const BATCH_SIZE = 500;
-			let zipMessages = [];
-            for (let i = 0; i < Math.ceil(results.length / BATCH_SIZE); i++) {
-                zipMessages.push({jobId: jobId, zips: []});
-            }
-            
-			for (let i = 0; i < results.length; i++) {
-				zipMessages[Math.floor(i / BATCH_SIZE)].zips.push(results[i].Zipcode);
-			}							
-			let ret = redisClient.hmsetAsync('job' + jobId, {num_zips: results.length, started_zips: 0});
-
-			// Oh god...
-			zipMessages.forEach((zipMessage) => {
-				ret = ret.then(() => queueService.createMessageAsync(process.env.ZIP_QUEUE_NAME, JSON.stringify(zipMessage)))
-			});
-			
-			return ret;
-		})
-		.then(() => queueService.createMessageAsync(process.env.JOB_QUEUE_NAME, jobId))
-        .then(() => new sql.Request().query(`INSERT INTO jobs (id, status) VALUES (${jobId}, 'IN_PROGRESS')`))
-		.then(() => {
-			res.json({
-				jobId: 	jobId
-			})	
-		})
-		.catch((error) => {
-			res.status(500).json({
-				error: error.message
-			})
-		})
-	
+    // Submit the job and return the id
+    createJobAsync(req.body.region, req.body.keywords)
+    .then((jobId) => {
+        res.json({
+            jobId: jobId
+        })
+    })
+    .catch((error) => {
+        res.status(500).json({
+            error: error.message
+        })
+    })
 });
 
-app.listen(process.env.port || 1234, () => console.log("Listening..."));
 
 // Whether the JSON body is valid
 function isValidBody(body) {
@@ -121,4 +91,78 @@ function isValidBody(body) {
 		&& typeof body.region.max.lon == 'number'
 		&& body.keywords
 		&& typeof body.keywords == 'string'
+}
+
+
+// Create a job and submit it to the queue
+function createJobAsync(region, keywords) {
+    // Add the job to the SQL database and generate queues
+    return sqlConnection
+    .then(() => {
+      return new sql.Request().query(`INSERT INTO Jobs (status, min_lat, max_lat, min_lon, max_lon)
+                                                OUTPUT INSERTED.id
+                                                VALUES ('IN_PROGRESS',
+                                                    ${region.min.lat},
+                                                    ${region.max.lat},
+                                                    ${region.min.lon},
+                                                    ${region.max.lon})`);
+    })
+    .then((results) => {
+        let jobId = results[0].id;
+        return createQueuesAsync(jobId)
+            .then(() => queueZipcodesAsync(jobId, region, keywords))
+            .then(() => jobId);
+    })
+    .catch((error) => {
+	throw new Error(`Error creating job: ${error.message}`);
+    });
+}
+
+
+// Create the queues for a job
+function createQueuesAsync(jobId) {
+    return queueService.createQueueIfNotExistsAsync(process.env.AGGREGATOR_QUEUE_NAME)
+	.then(() => queueService.createQueueIfNotExistsAsync(`${process.env.PLACE_QUEUE_NAME}-${jobId}`))
+	.then(() => queueService.createQueueIfNotExistsAsync(`${process.env.ZIP_QUEUE_NAME}-${jobId}`))
+	.catch((error) => {
+	    throw new Error(`Error creating queues: ${error.message}`);
+	});
+}
+
+
+// Add all zipcodes from a region into the queue and redis
+function queueZipcodesAsync(jobId, region, keywords) {
+    let req = new sql.Request();
+    return req.query(`SELECT zipcode FROM Zipcodes WHERE lat <= ${region.max.lat} AND
+							 lat >= ${region.min.lat} AND
+							 lon <= ${region.max.lon} AND
+							 lon >= ${region.min.lon}`)
+
+    .then((results) => {
+        const BATCH_SIZE = 500;
+        let zipMessages = batchZipMessages(jobId, keywords, results, BATCH_SIZE);
+        let redisPromise = redisClient.hmsetAsync('job' + jobId, {status: 'IN_PROGRESS', num_zips: results.length, started_zips: 0});
+
+        let returnPromise = zipMessages.reduce((promise, message) => {
+            return promise.then(() => queueService.createMessageAsync(`${process.env.ZIP_QUEUE_NAME}-${jobId}`, JSON.stringify(message)));
+        }, redisPromise);
+
+        return returnPromise.catch((error) => {
+            throw new Error(`Error submitting zipcodes: ${error.message}`);
+        });
+    })
+}
+
+
+// Batch a SQL result set of zipcodes into messages
+function batchZipMessages(jobId, keywords, resultSet, batchSize) {
+    let zipMessages = [];
+
+    for (let i = 0; i < Math.ceil(resultSet.length / batchSize); i++)
+	zipMessages.push({jobId: jobId, zips: []});
+
+    for (let i = 0; i < resultSet.length; i++)
+	zipMessages[Math.floor(i / batchSize)].zips.push(resultSet[i].Zipcode);
+
+    return zipMessages;
 }
