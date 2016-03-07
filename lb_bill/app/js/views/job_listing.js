@@ -6,7 +6,7 @@ define(["backbone"],
 			},
 			render: function(){
 				// Compile the template using underscore
-				var template = _.template( $("#home_template").html(), {} );
+				var template = _.template( $("#job_listing_template").html(), {} );
 				// Load the compiled HTML into the Backbone "el"
 				this.$el.html( template );
 				
@@ -15,5 +15,5 @@ define(["backbone"],
     }
 );
 $(document).ready(function(){
-    $('.parallax').parallax();
+    
 });
