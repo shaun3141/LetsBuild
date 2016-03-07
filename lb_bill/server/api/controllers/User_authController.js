@@ -65,7 +65,7 @@ module.exports = {
 
   verifyEmail: function(req,res){
     var data = req.body;
-    var sptoken = data.sptoken;
+    var sptoken = data.token;
 
     request.post({url:"https://api.stormpath.com/v1/accounts/emailVerificationTokens/"+sptoken},function(err,response,body){
       if (err){
@@ -81,7 +81,7 @@ module.exports = {
     var data = req.body;
     var email = data.email;
 
-    request({url:STORMPATH_APPLICATION_HREF+"/verificationEmails",form:{login:email}},function(err,response,body){
+    request({url:sails.config.stormpath["STORMPATH_APPLICATION_HREF"]+"/verificationEmails",form:{login:email}},function(err,response,body){
       if (err){
         res.send(503,{error:err.userMessage});
       }else{
