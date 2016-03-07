@@ -12,3 +12,9 @@ p {
 	float:right;
 	margin-right:5%;
 }
+
+.center-job-listing {
+	width:80%;
+	margin:auto;
+
+}

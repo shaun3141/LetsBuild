@@ -24,5 +24,5 @@ define(["backbone"],
 	            console.log("New User Has Asked To Be Created");
 	        }
 	    });
-    });
-});
+    }
+);

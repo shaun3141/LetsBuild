@@ -1,23 +1,26 @@
 define(["backbone"],
     function(Backbone) {
+    	var homeView;
+    	var jobListingView;
       return Backbone.Router.extend({
   		routes: {
-   			"/": "home",
-    		"/job-listing": "jobListing"
+   			"": "home",
+    		"/jobListing": "jobListing"
   		},
 
 		home: function(){
-			var homeView = new Backbone.View.Home();
-    		console.log("lksdjf");
+    		console.log("awieuqoew");
+    		homeView.render();
 		},
 
 		jobListing: function(){
-			//var jobList = new JobListingView();
-			
+			console.log("lksdjhfksjdf");
+			jobListing.render();
 		},
 
-		initialize: function(options) {
-			
+		initialize: function(home, jobListing) {
+			homeView=home;
+			jobListingView=jobListing;
         }
     });
 });

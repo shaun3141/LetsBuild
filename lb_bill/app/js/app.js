@@ -2,10 +2,15 @@ define([
     'jquery',
     'underscore',
     'backbone',
-    'router'
+    'router',
+    'models/users',
+    'views/home',
+    'views/job_listing'
     ],
-    function($,_,Backbone,Router, User){
-        
+    function($,_,Backbone,Router, User, Home, JobListing){
+        var homeview = new Home({ el: $("#home_container") });
+        var joblistingview = new JobListing({ el: $("#job_listing_container") });
+        var router = new Router(homeview, joblistingview);
         var Application = {
             initialize: function () {
                 var self = this;
@@ -15,22 +20,13 @@ define([
 
                 $(document).ready(function() {           
 
-                    // $.get(app + "/", function(data){
-                    //      console.log("lksdjflk");
-                    // });
+                    homeview.render();
                 });
-
-                // router.on('route:home', function() {
-                //   // render user list
-                //   userListView.render();
-                // });
             }
         }
 
         return Application;
     });
-
 $(document).ready(function(){
-    $('.parallax').parallax();
     $('.modal-trigger').leanModal();
 });
