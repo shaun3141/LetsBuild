@@ -15,6 +15,9 @@ let redisClient = redis.createClient({
 	auth_pass: process.env.REDIS_PASSWORD,
 	port: process.env.REDIS_PORT || 6379
 })
+redisClient.on('error', (err) => {
+   console.error(`Redis died: ${err.message}`); 
+})
 
 let sqlConnection = sql.connect({
 	user: process.env.SQL_USER,
@@ -141,7 +144,14 @@ function queueZipcodesAsync(jobId, region, keywords) {
     .then((results) => {
         const BATCH_SIZE = 500;
         let zipMessages = batchZipMessages(jobId, keywords, results, BATCH_SIZE);
-        let redisPromise = redisClient.hmsetAsync('job' + jobId, {status: 'IN_PROGRESS', num_zips: results.length, started_zips: 0});
+        let redisPromise = redisClient.hmsetAsync('job' + jobId, { 
+            status: 'IN_PROGRESS',
+            num_zips: results.length,
+            started_zips: 0,
+            discovered_places: 0,
+            scraped_places: 0,
+            emails_found: 0
+        });
 
         let returnPromise = zipMessages.reduce((promise, message) => {
             return promise.then(() => queueService.createMessageAsync(`${process.env.ZIP_QUEUE_NAME}-${jobId}`, JSON.stringify(message)));
