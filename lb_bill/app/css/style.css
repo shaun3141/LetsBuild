@@ -1,3 +1,14 @@
+.center-btn { text-align: center; height:100%; }
+.internal-modal-btn {width:30%;}
 .body{
     /* stuff */
+}
+
+p {
+	margin:0px;
+}
+
+.user-info {
+	float:right;
+	margin-right:5%;
 }
