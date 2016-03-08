@@ -16,5 +16,91 @@ p {
 .center-job-listing {
 	width:80%;
 	margin:auto;
+	margin-top:50px;
 
+}
+
+ #catchy-wrapper {
+    text-align: center;
+}
+
+#catchy-box {
+    font-size: 42px;
+    position: relative;
+    top: -95px;
+    padding: 10px;
+    background-color: #ffa000;
+    display: inline-block;
+    box-shadow: 0 2px 5px 0 rgba(0,0,0,0.16),0 2px 10px 0 rgba(0,0,0,0.12);
+    border-radius: 5px;
+    margin: 3px;
+}
+
+#catchy-top {
+    background-color: white;
+    padding: 8px;
+    border-radius: 5px;
+}
+
+#catchy-bottom {
+    font-weight: bold;
+}
+
+#welcome-to {
+    text-align: center;
+}
+
+#circle-wrapper {
+    max-width: 1100px;
+    display: inline-block;
+    margin-right: 40px;
+    margin-bottom: 80px;   
+}
+
+.circles {
+    display: inline-block;
+    width: 350px;
+    height: 350px;
+    border-radius: 50%;
+    border: 3px solid #00796b;
+    margin-right: -40px;
+    margin-bottom: -80px;
+    padding: 40px;
+    padding-top: 8px;
+    font-size: 35px;
+    font-weight: bold;
+    color: #00796b;
+}
+
+.circle-content {
+    font-size: 20px;
+    text-align: center;
+    color: black;
+    font-weight: normal;  
+    padding-top: 15px;
+}
+
+.section-heading {
+    font-size: 28px;
+    padding: 10px 50px;
+    background-color: #ffa000;
+    display: inline-block;
+    box-shadow: 0 2px 5px 0 rgba(0,0,0,0.16),0 2px 10px 0 rgba(0,0,0,0.12);
+    border-radius: 5px;
+    margin: 10px;
+    margin-top: 40px;
+    color: white;
+}
+
+.subsection-heading {
+    text-align: left;
+    font-weight: bold;
+    font-size: 32px;
+    color: #00796b;   
+}
+
+.section-content {
+    font-size: 18px;
+    max-width: 360px;
+    display: inline-block;   
 }
