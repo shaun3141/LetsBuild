@@ -44,3 +44,4 @@ require([
 ], function (App) {
     App.initialize();
 });
+
