@@ -25,5 +25,7 @@ module.exports = {
 
     crypto: {
         CRYPTO_KEY: 'HpFNfvyWuVMuUK8c'
-    }
+    },
+
+    charlotte_base: "localhost:1234"
 };

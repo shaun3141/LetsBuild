@@ -23,24 +23,10 @@ module.exports.connections = {
 
   /***************************************************************************
   *                                                                          *
-  * Local disk storage for DEVELOPMENT ONLY                                  *
-  *                                                                          *
-  * Installed by default.                                                    *
+  * The persistent SQL job information                                        *
   *                                                                          *
   ***************************************************************************/
-  localDiskDb: {
-    adapter: 'sails-disk'
-  },
-
-  /***************************************************************************
-  *                                                                          *
-  * MySQL is the world's most popular relational database.                   *
-  * http://en.wikipedia.org/wiki/MySQL                                       *
-  *                                                                          *
-  * Run: npm install sails-mysql                                             *
-  *                                                                          *
-  ***************************************************************************/
-  someMysqlServer: {
+  job_persistent: {
     adapter: 'sails-mysql',
     host: 'YOUR_MYSQL_SERVER_HOSTNAME_OR_IP_ADDRESS',
     user: 'YOUR_MYSQL_USER',
@@ -50,43 +36,14 @@ module.exports.connections = {
 
   /***************************************************************************
   *                                                                          *
-  * MongoDB is the leading NoSQL database.                                   *
-  * http://en.wikipedia.org/wiki/MongoDB                                     *
-  *                                                                          *
-  * Run: npm install sails-mongo                                             *
+  * The persistent SQL job information                                        *
   *                                                                          *
   ***************************************************************************/
-  someMongodbServer: {
-    adapter: 'sails-mongo',
-    host: 'localhost',
-    port: 27017,
-    // user: 'username',
-    // password: 'password',
-    // database: 'your_mongo_db_name_here'
-  },
-
-  /***************************************************************************
-  *                                                                          *
-  * PostgreSQL is another officially supported relational database.          *
-  * http://en.wikipedia.org/wiki/PostgreSQL                                  *
-  *                                                                          *
-  * Run: npm install sails-postgresql                                        *
-  *                                                                          *
-  *                                                                          *
-  ***************************************************************************/
-  somePostgresqlServer: {
-    adapter: 'sails-postgresql',
-    host: 'YOUR_POSTGRES_SERVER_HOSTNAME_OR_IP_ADDRESS',
-    user: 'YOUR_POSTGRES_USER',
-    password: 'YOUR_POSTGRES_PASSWORD',
-    database: 'YOUR_POSTGRES_DB'
+  job_progress:{
+    adapter: 'sails-redis',
+    port: 1234,
+    host: 'SOME HOST',
+    password: null,
+    database: null
   }
-
-
-  /***************************************************************************
-  *                                                                          *
-  * More adapters: https://github.com/balderdashy/sails                      *
-  *                                                                          *
-  ***************************************************************************/
-
 };
