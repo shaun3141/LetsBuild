@@ -41,7 +41,7 @@ module.exports = {
       application.createAccount(account, function(err, createdAccount) {
           if(err){
             console.log(err);
-            return res.send(503, {error: err.userMessage});
+            return res.send(400, {error: err.userMessage});
           } else {
             return res.send(200, {message: 'User created'});
           }
@@ -70,7 +70,7 @@ module.exports = {
     request.post({url:"https://api.stormpath.com/v1/accounts/emailVerificationTokens/"+sptoken},function(err,response,body){
       if (err){
         console.log(err);
-        res.send(503,{error:err.userMessage});
+        res.send(400,{error:err.userMessage});
       }else{
         res.send(200,{success:true});
       }
@@ -83,7 +83,7 @@ module.exports = {
 
     request({url:sails.config.stormpath["STORMPATH_APPLICATION_HREF"]+"/verificationEmails",form:{login:email}},function(err,response,body){
       if (err){
-        res.send(503,{error:err.userMessage});
+        res.send(400,{error:err.userMessage});
       }else{
         res.send(200,{success:true});
       }
@@ -107,7 +107,7 @@ module.exports = {
         // getAccount(), for getting the authenticated account.
         if(err){
             console.log(err);
-            res.send(503, {error: err.userMessage});
+            res.send(400, {error: err.userMessage});
         } else {
           result.getAccount(function(err, account) {
             if(err){
