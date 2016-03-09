@@ -41,9 +41,9 @@ module.exports = {
       application.createAccount(account, function(err, createdAccount) {
           if(err){
             console.log(err);
-            return res.send(400, {error: err.userMessage});
+            return res.json(400, {error: err.userMessage});
           } else {
-            return res.send(200, {message: 'User created'});
+            return res.json(200, {message: 'User created'});
           }
       });
     });
@@ -70,9 +70,9 @@ module.exports = {
     request.post({url:"https://api.stormpath.com/v1/accounts/emailVerificationTokens/"+sptoken},function(err,response,body){
       if (err){
         console.log(err);
-        res.send(400,{error:err.userMessage});
+        res.json(400,{error:err.userMessage});
       }else{
-        res.send(200,{success:true});
+        res.json(200,{success:true});
       }
     });
   },
@@ -83,9 +83,9 @@ module.exports = {
 
     request({url:sails.config.stormpath["STORMPATH_APPLICATION_HREF"]+"/verificationEmails",form:{login:email}},function(err,response,body){
       if (err){
-        res.send(400,{error:err.userMessage});
+        res.json(400,{error:err.userMessage});
       }else{
-        res.send(200,{success:true});
+        res.json(200,{success:true});
       }
     });
   },
@@ -107,12 +107,12 @@ module.exports = {
         // getAccount(), for getting the authenticated account.
         if(err){
             console.log(err);
-            res.send(400, {error: err.userMessage});
+            res.json(400, {error: err.userMessage});
         } else {
           result.getAccount(function(err, account) {
             if(err){
               console.log(err);
-              res.send(401, {error: err.userMessage});
+              res.json(401, {error: err.userMessage});
             } else {
               if(account.status === "ENABLED"){
                 var user = {
@@ -127,9 +127,9 @@ module.exports = {
                 var encrypted = CryptoJS.AES.encrypt(JSON.stringify(user), key, { format: JsonFormatter });
                 var encrypted_json_str = encrypted.toString();
 
-                res.send(200, {account: encrypted_json_str});
+                res.json(200, {account: encrypted_json_str});
               } else {
-                res.send(401, {error: 'User account disabled'});
+                res.json(401, {error: 'User account disabled'});
               }
             }
           });

@@ -28,11 +28,11 @@ module.exports = {
       }
     },function(err,response,body){
       if (err){
-        res.send(400,{error:err.error});
+        res.json(400,{error:err.error});
         return;
       }
 
-      res.send(200,{success:true,jobId:body.jobId});
+      res.json(200,{success:true,jobId:body.jobId});
     });
 
   },
