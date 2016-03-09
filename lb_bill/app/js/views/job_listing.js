@@ -4,6 +4,9 @@ define(["backbone"],
 		  	initialize: function(){
 				
 			},
+			setRouter: function(router) {
+				this.app_router = router;
+			},
 			render: function(){
 				var that = this;
 				// Compile the template using underscore

@@ -3,30 +3,40 @@ define([
     'underscore',
     'backbone',
     'router',
-    'models/users',
-    'views/header',
+    'models/user',
+    'views/nonauth_header',
+    'views/auth_header',
     'views/home',
     'views/job_listing',
     ],
-    function($,_,Backbone, Router, User, Header, Home, JobListing){
-        var headerview = new Header({el: $("#header_container")});
-        var homeview = new Home({el: $("#content_container")});
-        var joblistingview = new JobListing({el: $("#content_container")});
+    function($,_,Backbone, Router, User, NonAuthHeader, AuthHeader, Home, JobListing){
+        var nonauth_header_view = new NonAuthHeader({el: $("#header_container")});
+        var auth_header_view = new AuthHeader({el: $("#header_container")});
+        var home_view = new Home({el: $("#content_container")});
+        var joblisting_view = new JobListing({el: $("#content_container")});
+
         var Application = {
             initialize: function () {
                 var self = this;
 
                 var app_router = new Router;
 
+                nonauth_header_view.setRouter(app_router);
+                auth_header_view.setRouter(app_router);
+                home_view.setRouter(app_router);
+                joblisting_view.setRouter(app_router);
+
                 app_router.on('route:home', function(){
-                    headerview.render();
-                    homeview.render();
+                    nonauth_header_view.render();
+                    //auth_header_view.render();
+                    home_view.render();
                     
                 });
 
                 app_router.on('route:jobListing', function(actions){
-                    headerview.render();
-                    joblistingview.render();
+                    nonauth_header_view.render();
+                    //auth_header_view.render();
+                    joblisting_view.render();
                 });
 
                 app_router.on('route:defaultAction', function(actions){

@@ -1,0 +1,37 @@
+<header id="user-container">
+  <nav class="top-nav">
+      <div class="nav-wrapper teal darken-2">
+          <div id="nav-mobile">
+              <div class="user-info">
+                <a class='dropdown-button btn' href='#' data-activates='profile-dropdown'>username</a>
+              </div>
+          </div>
+      </div>
+  </nav>
+</header>
+
+<ul id='profile-dropdown' class='dropdown-content'>
+  <li><a href="#!">username</a></li>
+  <li class="divider"></li>
+  <li><a href="#!">Overview</a></li>
+  <li class="divider"></li>
+  <li><a href="#!">Add New Job</a></li>
+  <li class="divider"></li>
+  <li><a href="#!">View Profile / Billing</a></li>
+</ul>
+
+ <script>
+ $(document).ready(function() { 
+    jQuery.noConflict();
+    $('.dropdown-button').dropdown({
+        inDuration: 300,
+        outDuration: 225,
+        constrain_width: false, // Does not change width of dropdown to that of the activator
+        hover: true, // Activate on hover
+        gutter: 0, // Spacing from edge
+        belowOrigin: false, // Displays dropdown below the button
+        alignment: 'left' // Displays dropdown with edge aligned to the left of button
+      }
+    );
+  });
+ </script>

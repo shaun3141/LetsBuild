@@ -15,14 +15,14 @@
       <h4>Login</h4>
       <div class="row">
       <form class="col s12">
-        <div class="row">
-          <div class="input-field col s12">
+        <div class="row div-row">
+          <div class="input-field col s12 div-row-input">
             <input id="email" type="email" class="validate">
             <label for="email">Email</label>
           </div>
         </div>
-        <div class="row">
-          <div class="input-field col s12">
+        <div class="row div-row">
+          <div class="input-field col s12 div-row-input">
             <input id="password" type="password" class="validate">
             <label for="password">Password</label>
           </div>
@@ -32,7 +32,7 @@
   </div>
   <div class="modal-footer">
       <div class="center-btn">
-          <a href="#!" class=" modal-action modal-close waves-effect teal darken-2 btn internal-modal-btn">Login</a>
+          <a class=" modal-action modal-close waves-effect teal darken-2 btn internal-modal-btn login-go">Login</a>
       </div>
   </div>
 </div>
@@ -41,33 +41,33 @@
   <div class="modal-content">
       <h4>Sign Up</h4>
       <div class="row">
-      <form action="/createUser" class="col s12">
-        <div class="row">
-          <div class="input-field col s12">
+      <form class="col s12">
+        <div class="row div-row">
+          <div class="input-field col s12 div-row-input">
             <input id="email" type="email" class="validate">
             <label for="email">Email</label>
           </div>
         </div>
-        <div class="row">
-          <div class="input-field col s12">
+        <div class="row div-row">
+          <div class="input-field col s12 div-row-input">
             <input id="fname" type="text" class="validate">
             <label for="fname">First Name</label>
           </div>
         </div>
-        <div class="row">
-          <div class="input-field col s12">
+        <div class="row div-row">
+          <div class="input-field col s12 div-row-input">
             <input id="lname" type="text" class="validate">
             <label for="lname">Last Name</label>
           </div>
         </div>
-        <div class="row">
-          <div class="input-field col s12">
+        <div class="row div-row">
+          <div class="input-field col s12 div-row-input">
             <input id="password" type="password" class="validate">
             <label for="password">Password</label>
           </div>
         </div>
-        <div class="row">
-          <div class="input-field col s12">
+        <div class="row div-row">
+          <div class="input-field col s12 div-row-input">
             <input id="confirm-password" type="password" class="validate">
             <label for="confirm-password">Confirm Password</label>
           </div>
@@ -81,11 +81,9 @@
       </div>
   </div>
 </div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.1/js/materialize.min.js"></script>
  <script>
  $(document).ready(function() { 
     jQuery.noConflict();
     $('.modal-trigger').leanModal();
-
   });
  </script>
