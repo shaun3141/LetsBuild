@@ -39,11 +39,27 @@ module.exports = {
 
   getJob: function(req,res){
     var jobId = req.body.jobId;
+    JobInfo.findById(jobId).exec(function(err,jobs){
+      if (err){
+        res.json(400,{error:err});
+        return;
+      }
 
+      res.json(200,{job:jobs});
+    });
   },
 
   getJobProgress: function(req,res){
     var jobId = req.body.jobId;
+
+    JobProgress.findById(jobId).exec(function(err,jobs){
+      if (err){
+        res.json(400,{error:err});
+        return;
+      }
+
+      res.json(200,{job:jobs});
+    });
   }
 
 };
