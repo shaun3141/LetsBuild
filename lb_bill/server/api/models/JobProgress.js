@@ -11,7 +11,7 @@ module.exports = {
         id:{
             type:"integer",
             required:true
-        }
+        },
         status:{
             type:"string",
             enum:["ADDING_TO_ZIP_QUEUE",

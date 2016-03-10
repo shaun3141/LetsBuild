@@ -13,7 +13,7 @@ module.exports = {
             type:"integer",
             required:true,
             primaryKey: true
-        }
+        },
         user_id:{
             type:"string",
             required:true
@@ -33,7 +33,7 @@ module.exports = {
         max_long:{
             type:"float",
             required:true
-        }
+        },
         status:{
             type:"string",
             enum:["ADDING_TO_ZIP_QUEUE",
