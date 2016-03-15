@@ -45,7 +45,10 @@ Input:
 	    "min": {"lat": xxx, "lon": xxx},
 	    "max": {"lat": xxx, "lon": xxx}
 	},
-	"keywords": "yyy"
+	"keywords": "yyy",
+    "name": "xxx",
+    "description": "yyy",
+    "userId": "1234"
     }
 Output:
     200:
@@ -64,7 +67,7 @@ app.post('/job', (req, res) => {
 	}
 	
     // Submit the job and return the id
-    createJobAsync(req.body.region, req.body.keywords)
+    createJobAsync(req.body.region, req.body.keywords, req.body.userId, req.body.name, req.body.description)
     .then((jobId) => {
         res.json({
             jobId: jobId
@@ -94,21 +97,34 @@ function isValidBody(body) {
 		&& typeof body.region.max.lon == 'number'
 		&& body.keywords
 		&& typeof body.keywords == 'string'
+        && body.userId
+        && typeof body.userId == 'string'
+        && body.name
+        && typeof body.name == 'string'
+        && body.description
+        && typeof body.description == 'string';
 }
 
 
 // Create a job and submit it to the queue
-function createJobAsync(region, keywords) {
+function createJobAsync(region, keywords, userId, name, description) {
     // Add the job to the SQL database and generate queues
     return sqlConnection
     .then(() => {
-      return new sql.Request().query(`INSERT INTO Jobs (status, min_lat, max_lat, min_lon, max_lon)
-                                                OUTPUT INSERTED.id
-                                                VALUES ('IN_PROGRESS',
-                                                    ${region.min.lat},
-                                                    ${region.max.lat},
-                                                    ${region.min.lon},
-                                                    ${region.max.lon})`);
+      let request = new sql.Request()
+      request.input('minLat', region.min.lat);
+      request.input('maxLat', region.max.lat);
+      request.input('minLon', region.min.lon);
+      request.input('maxLon', region.max.lon);
+      request.input('keywords', keywords);
+      request.input('userId', userId);
+      request.input('name', name);
+      request.input('description', description);
+
+
+      return request.query(`INSERT INTO Jobs (status, min_lat, max_lat, min_lon, max_lon, keywords, user_id, name, description)
+                                        OUTPUT INSERTED.id
+                                        VALUES ('IN_PROGRESS', @minLat, @maxLat, @minLon, @maxLon, @keywords, @userId, @name, @description)`);
     })
     .then((results) => {
         let jobId = results[0].id;
@@ -124,8 +140,15 @@ function createJobAsync(region, keywords) {
 
 // Create the queues for a job
 function createQueuesAsync(jobId) {
-    return queueService.createQueueIfNotExistsAsync(process.env.AGGREGATOR_QUEUE_NAME)
-	.then(() => queueService.createQueueIfNotExistsAsync(`${process.env.PLACE_QUEUE_NAME}-${jobId}`))
+    
+    // Don't block the rest of the pipeline if we crash
+    const REDIS_EXPIRE_TIME_SECS = 120;
+    
+    return redisClient.multi()
+        .hset('job' + jobId, 'status', 'ADDING_TO_ZIP_QUEUE')
+        .expire('job' + jobId, REDIS_EXPIRE_TIME_SECS)
+        .execAsync()
+    .then(() => queueService.createQueueIfNotExistsAsync(process.env.AGGREGATOR_QUEUE_NAME))
 	.then(() => queueService.createQueueIfNotExistsAsync(`${process.env.ZIP_QUEUE_NAME}-${jobId}`))
 	.catch((error) => {
 	    throw new Error(`Error creating queues: ${error.message}`);
@@ -133,46 +156,51 @@ function createQueuesAsync(jobId) {
 }
 
 
-// Add all zipcodes from a region into the queue and redis
+// Add all lat + lngs from a region into the queue and redis
 function queueZipcodesAsync(jobId, region, keywords) {
     let req = new sql.Request();
-    return req.query(`SELECT zipcode FROM Zipcodes WHERE lat <= ${region.max.lat} AND
-							 lat >= ${region.min.lat} AND
-							 lon <= ${region.max.lon} AND
-							 lon >= ${region.min.lon}`)
+    return req.query(`SELECT lat, lon FROM Zipcodes WHERE
+                                    lat <= ${region.max.lat} AND
+							        lat >= ${region.min.lat} AND
+							        lon <= ${region.max.lon} AND
+							        lon >= ${region.min.lon}`)
 
     .then((results) => {
         const BATCH_SIZE = 500;
         let zipMessages = batchZipMessages(jobId, keywords, results, BATCH_SIZE);
-        let redisPromise = redisClient.hmsetAsync('job' + jobId, { 
-            status: 'IN_PROGRESS',
-            num_zips: results.length,
-            started_zips: 0,
-            discovered_places: 0,
-            scraped_places: 0,
-            emails_found: 0
-        });
 
-        let returnPromise = zipMessages.reduce((promise, message) => {
-            return promise.then(() => queueService.createMessageAsync(`${process.env.ZIP_QUEUE_NAME}-${jobId}`, JSON.stringify(message)));
-        }, redisPromise);
+        let messageInsertPromises = zipMessages.map((message) => {
+            return queueService.createMessageAsync(`${process.env.ZIP_QUEUE_NAME}-${jobId}`, JSON.stringify(message));
+        })
 
-        return returnPromise.catch((error) => {
+        return Promise.all(messageInsertPromises)
+        .then(() => redisClient.multi()
+            .hmset('job' + jobId, { 
+                status: 'ADDING_TO_PLACE_QUEUE',
+                num_zips: results.length,
+                started_zips: 0,
+                discovered_places: 0,
+                scraped_places: 0,
+                emails_found: 0
+             })
+            .persist('job' + jobId)
+            .execAsync())
+        .catch((error) => {
             throw new Error(`Error submitting zipcodes: ${error.message}`);
         });
     })
 }
 
 
-// Batch a SQL result set of zipcodes into messages
+// Batch a SQL result set of zipcode lat lons into messages
 function batchZipMessages(jobId, keywords, resultSet, batchSize) {
     let zipMessages = [];
 
     for (let i = 0; i < Math.ceil(resultSet.length / batchSize); i++)
-	zipMessages.push({jobId: jobId, zips: []});
+	   zipMessages.push({jobId: jobId, keywords: keywords, regions: []});
 
     for (let i = 0; i < resultSet.length; i++)
-	zipMessages[Math.floor(i / batchSize)].zips.push(resultSet[i].Zipcode);
+	   zipMessages[Math.floor(i / batchSize)].regions.push({lat: resultSet[i].lat, lon: resultSet[i].lon});
 
     return zipMessages;
 }
