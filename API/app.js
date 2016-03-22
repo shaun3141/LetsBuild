@@ -150,6 +150,7 @@ function createQueuesAsync(jobId) {
         .execAsync()
     .then(() => queueService.createQueueIfNotExistsAsync(process.env.AGGREGATOR_QUEUE_NAME))
 	.then(() => queueService.createQueueIfNotExistsAsync(`${process.env.ZIP_QUEUE_NAME}-${jobId}`))
+    .then(() => queueService.createQueueIfNotExistsAsync(`${process.env.PLACE_QUEUE_NAME}-${jobId}`))
 	.catch((error) => {
 	    throw new Error(`Error creating queues: ${error.message}`);
 	});
