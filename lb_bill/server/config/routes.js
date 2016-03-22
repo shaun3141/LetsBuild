@@ -37,5 +37,8 @@ module.exports.routes = {
   'POST /user/send_reset': 'User_authController.sendUserReset',
   'POST /user/reset': 'User_authController.resetPassword',
   'POST /user/verify': "User_authController.verifyEmail",
-  "POST /user/resend": "User_authController.resendVerifyEmail"
+  "POST /user/resend": "User_authController.resendVerifyEmail",
+  "POST /job/run": "Run_activationController.startRun",
+  "GET /job/:jobId": "Run_activationController.getJob",
+  "GET /job/:jobId/progress": "Run_activationController.getJobProgress"
 };

@@ -27,11 +27,14 @@ module.exports.connections = {
   *                                                                          *
   ***************************************************************************/
   job_persistent: {
-    adapter: 'sails-mysql',
-    host: 'YOUR_MYSQL_SERVER_HOSTNAME_OR_IP_ADDRESS',
-    user: 'YOUR_MYSQL_USER',
-    password: 'YOUR_MYSQL_PASSWORD',
-    database: 'YOUR_MYSQL_DB'
+    adapter: 'sails-sqlserver',
+    host: 'geohelper.database.windows.net',
+    user: 'geouser',
+    password: 'Geohelper!',
+    database: 'geohelper_db',
+    options:{
+      encrypt:true
+    }
   },
 
   /***************************************************************************
@@ -41,9 +44,9 @@ module.exports.connections = {
   ***************************************************************************/
   job_progress:{
     adapter: 'sails-redis',
-    port: 1234,
-    host: 'SOME HOST',
-    password: null,
-    database: null
+    port: 6379,
+    host: 'letsbuild.redis.cache.windows.net',
+    password: "guL+z01QuX5bj8g3NWjFpzFUrMP20cifkzbG7HtsIHs="
+    //database: null
   }
 };

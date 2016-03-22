@@ -12,7 +12,7 @@ module.exports = {
   startRun: function(req,res){
     var data = req.body;
 
-    var user_id = "";//get user_id
+    var user_id = req.options.authUser.userId;
 
     request.post({
       url:config.charlotte+"/job",
@@ -38,7 +38,7 @@ module.exports = {
   },
 
   getJob: function(req,res){
-    var jobId = req.body.jobId;
+    var jobId = req.param("jobId");
     JobInfo.findById(jobId).exec(function(err,jobs){
       if (err){
         res.json(400,{error:err});
@@ -50,7 +50,7 @@ module.exports = {
   },
 
   getJobProgress: function(req,res){
-    var jobId = req.body.jobId;
+    var jobId = req.param("jobId");
 
     JobProgress.findById(jobId).exec(function(err,jobs){
       if (err){

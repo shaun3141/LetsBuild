@@ -6,7 +6,7 @@
 */
 
 module.exports = {
-    //connection:"job_persistent",
+    connection:"job_persistent",
     tableName:"Jobs",
     attributes: {
         id:{
