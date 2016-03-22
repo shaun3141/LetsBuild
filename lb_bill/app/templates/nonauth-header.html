@@ -17,14 +17,14 @@
       <form class="col s12">
         <div class="row div-row">
           <div class="input-field col s12 div-row-input">
-            <input id="email" type="email" class="validate">
-            <label for="email">Email</label>
+            <input id="email-in" type="email" class="validate">
+            <label class="input-label" for="email-in" data-error="Invalid email">Email</label>
           </div>
         </div>
         <div class="row div-row">
           <div class="input-field col s12 div-row-input">
-            <input id="password" type="password" class="validate">
-            <label for="password">Password</label>
+            <input id="password-in" type="password" class="validate">
+            <label class="input-label" for="password-in" data-error="Invalid password">Password</label>
           </div>
         </div>
       </form>
@@ -32,7 +32,7 @@
   </div>
   <div class="modal-footer">
       <div class="center-btn">
-          <a class=" modal-action modal-close waves-effect teal darken-2 btn internal-modal-btn login-go">Login</a>
+          <a class="waves-effect teal darken-2 btn internal-modal-btn login-go">Login</a>
       </div>
   </div>
 </div>
@@ -44,32 +44,32 @@
       <form class="col s12">
         <div class="row div-row">
           <div class="input-field col s12 div-row-input">
-            <input id="email" type="email" class="validate">
-            <label for="email">Email</label>
+            <input id="email" type="email" class="validate content">
+            <label class="input-label" for="email" data-error="Invalid email">Email</label>
           </div>
         </div>
         <div class="row div-row">
           <div class="input-field col s12 div-row-input">
-            <input id="fname" type="text" class="validate">
-            <label for="fname">First Name</label>
+            <input id="firstName" type="text" class="validate content">
+            <label class="input-label" for="firstName">First Name</label>
           </div>
         </div>
         <div class="row div-row">
           <div class="input-field col s12 div-row-input">
-            <input id="lname" type="text" class="validate">
-            <label for="lname">Last Name</label>
+            <input id="lastName" type="text" class="validate content">
+            <label class="input-label" for="lastName">Last Name</label>
           </div>
         </div>
         <div class="row div-row">
           <div class="input-field col s12 div-row-input">
-            <input id="password" type="password" class="validate">
-            <label for="password">Password</label>
+            <input id="password" type="password" class="validate content">
+            <label class="input-label" for="password" data-error="Invalid password. Remember it must be X length and have at least 1 capital letter">Password</label>
           </div>
         </div>
         <div class="row div-row">
           <div class="input-field col s12 div-row-input">
-            <input id="confirm-password" type="password" class="validate">
-            <label for="confirm-password">Confirm Password</label>
+            <input id="confirmPassword" type="password" class="validate content">
+            <label class="input-label" for="confirmPassword" data-error="Passwords do not match">Confirm Password</label>
           </div>
         </div>
       </form>
@@ -77,7 +77,7 @@
   </div>
   <div class="modal-footer">
       <div class="center-btn">
-          <a class=" modal-action modal-close waves-effect teal darken-2 btn internal-modal-btn signup-go">Sign Up</a>
+          <a class="waves-effect teal darken-2 btn internal-modal-btn signup-go">Sign Up</a>
       </div>
   </div>
 </div>

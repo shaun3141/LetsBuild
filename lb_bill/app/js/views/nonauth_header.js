@@ -3,11 +3,12 @@ define(["backbone", 'models/user'],
       	return Backbone.View.extend({
       		events: {
 		      "click .signup-go": "signUp", 
-		      "click .login-go": "login"  
+		      "click .login-go": "login",
+		      "change input.content":  "changed"
 		    },
-      		// template: _.template($('#header_template').html()),
 		  	initialize: function(){
-				
+				_.bindAll(this, 'changed');
+				this.new_user_info = {};
 			},
 			setRouter: function(router) {
 				this.app_router = router;
@@ -23,20 +24,31 @@ define(["backbone", 'models/user'],
 			},
 		    signUp: function( event ){
 				// Button clicked, you can access the element that was clicked with event.currentTarget
-				var data = $(event.currentTarget).data();
-
-				var new_user = new User({firstName:"luke",lastName:"geiken", email: "luke.geiken@gmail.com", password:"fake.1234", confirmPassword:"fake.1234"});
-				var resp = new_user.save(null, {
-				  	type: 'POST'
+				var data = {firstName:"luke",lastName:"geiken", email: "lgeiken@iastate.edu", password:"Fake.1234", confirmPassword:"Fake.1234"};
+				var that = this;
+				console.log(this.new_user);
+				var created_user = new User(this.new_user);
+				var resp = created_user.save(null, {
+				  	type: 'POST',
+				  	success: function (model, response) {
+				  		// Setup user session based on returned model
+				  		var responseText = JSON.parse(response.responseText);
+				  		console.log(responseText);
+				  		// Reroute to the job listing 
+						that.app_router.navigate('jobListing',true);
+						$('#signup-modal').closeModal();
+				    },
+				    error: function (model, response) {
+				    	var responseText = JSON.parse(response.responseText);
+				        console.log(responseText.error);
+						
+				    }
 				});
-				console.log(resp);
-				this.app_router.navigate('jobListing',true);
-		      
     		},
     		login: function( event ){
 				// Button clicked, you can access the element that was clicked with event.currentTarget
-				console.log("Login");
-				var data = $(event.currentTarget).data();
+				var data = {email: "lgeiken@iastate.edu", password:"Fake.1234"}
+				
 				this.app_router.navigate('jobListing',true);
 				//var new_user = new User({firstName:"luke",lastName:"geiken", email: "luke.geiken@gmail.com", password:"fake.1234", confirmPassword:"fake.1234"});
 				// var resp = new_user.save(null, {
@@ -44,7 +56,12 @@ define(["backbone", 'models/user'],
 				// });
 				//console.log(resp);
 		      
-    		}
+    		},	
+		    changed: function(evt) {
+		       var changed = evt.currentTarget;
+		       var value = $(evt.currentTarget).val();
+		       this.new_user[changed.id] = value;
+		    }
 		});
     }
 );
