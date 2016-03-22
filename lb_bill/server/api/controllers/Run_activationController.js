@@ -28,22 +28,38 @@ module.exports = {
       }
     },function(err,response,body){
       if (err){
-        res.send(400,{error:err.error});
+        res.json(400,{error:err.error});
         return;
       }
 
-      res.send(200,{success:true,jobId:body.jobId});
+      res.json(200,{success:true,jobId:body.jobId});
     });
 
   },
 
   getJob: function(req,res){
     var jobId = req.body.jobId;
+    JobInfo.findById(jobId).exec(function(err,jobs){
+      if (err){
+        res.json(400,{error:err});
+        return;
+      }
 
+      res.json(200,{job:jobs});
+    });
   },
 
   getJobProgress: function(req,res){
     var jobId = req.body.jobId;
+
+    JobProgress.findById(jobId).exec(function(err,jobs){
+      if (err){
+        res.json(400,{error:err});
+        return;
+      }
+
+      res.json(200,{job:jobs});
+    });
   }
 
 };
