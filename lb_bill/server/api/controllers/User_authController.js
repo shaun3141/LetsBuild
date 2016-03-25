@@ -21,6 +21,7 @@ module.exports = {
 
     var client = new stormpath.Client({ apiKey: apiKey });
     var applicationHref = sails.config.stormpath['STORMPATH_APPLICATION_HREF'];
+
     return {client:client, applicationHref: applicationHref};
 
   },
@@ -97,7 +98,7 @@ module.exports = {
     var formatter = this.formatter();
 
     var authRequest = {
-      email: data.email,
+      username: data.email,
       password: data.password
     };
 
@@ -107,7 +108,7 @@ module.exports = {
         // getAccount(), for getting the authenticated account.
         if(err){
             console.log(err);
-            res.json(400, {error: err.userMessage});
+            res.json(400, {message:"AUTH ERROR",error: err.userMessage});
         } else {
           result.getAccount(function(err, account) {
             if(err){

@@ -18,8 +18,8 @@ module.exports = {
    ***************************************************************************/
 
     stormpath:{
-        STORMPATH_CLIENT_APIKEY_ID: "3CZQLBCTRICRENBZOB8HJ1627",
-        STORMPATH_CLIENT_APIKEY_SECRET: "R32CCacviZpaD0dm6vQQX65bFxG0Taiv+ns7zVYKvq4",
+        STORMPATH_CLIENT_APIKEY_ID: "5ZXW3YJMFVVX2B9DPFS56XS3H",
+        STORMPATH_CLIENT_APIKEY_SECRET: "ArL+Nz9eBXcGK7iclpO8UsRsvJua3wNCOqsXXB1ZCwM",
         STORMPATH_APPLICATION_HREF: "https://api.stormpath.com/v1/applications/y4aMb78mCMwNCGy4efqBt"
     },
 
