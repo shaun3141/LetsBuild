@@ -40,5 +40,6 @@ module.exports.routes = {
   "POST /user/resend": "User_authController.resendVerifyEmail",
   "POST /job/run": "Run_activationController.startRun",
   "GET /job/:jobId": "Run_activationController.getJob",
-  "GET /job/:jobId/progress": "Run_activationController.getJobProgress"
+  "GET /job/:jobId/progress": "JobProgressController.getJob",
+  "GET /job": "JobProgressController.getJobIds"
 };
