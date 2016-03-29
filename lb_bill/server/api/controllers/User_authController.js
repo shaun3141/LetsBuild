@@ -44,7 +44,13 @@ module.exports = {
             console.log(err);
             return res.json(400, {error: err.userMessage});
           } else {
-            return res.json(200, {message: 'User created'});
+            var created_model = {
+              email: createdAccount.email, 
+              firstName: createdAccount.givenName, 
+              lastName: createdAccount.surname,
+              verifyHref: createdAccount.emailVerificationToken.href
+            };
+            return res.json(200, {model: created_model, message: 'User created'});
           }
       });
     });
@@ -96,7 +102,7 @@ module.exports = {
     var client = this.getAuthApp()
     var data = req.body;
     var formatter = this.formatter();
-
+    
     var authRequest = {
       username: data.email,
       password: data.password

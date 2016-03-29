@@ -1,66 +1,92 @@
-define(["backbone", 'models/user'],
-    function(Backbone, User) {
+define(["backbone", 'models/user', 'models/login_user'],
+    function(Backbone, User, Login_User) {
       	return Backbone.View.extend({
       		events: {
 		      "click .signup-go": "signUp", 
 		      "click .login-go": "login",
-		      "change input.content":  "changed"
+		      "change input.signup-content":  "updateSignup",
+		      "change input.login-content":  "updateLogin"
 		    },
 		  	initialize: function(){
-				_.bindAll(this, 'changed');
-				this.new_user_info = {};
+				_.bindAll(this, 'updateSignup');
+				_.bindAll(this, 'updateLogin');
+				this.new_user = new User();
+				this.login_user = new Login_User();
 			},
-			setRouter: function(router) {
+			setRootScope: function(router, main_user) {
 				this.app_router = router;
+				this.main_user = main_user;
 			},
 			render: function(){
 				var that = this;
 				// Compile the template using underscore
-				var data_to_passed = "Hello";
 				$.get('/templates/nonauth-header.html', function (data) {
-				    template = _.template(data, { data_to_passed : data_to_passed }); 
-				    that.$el.html(template); 
+				    var template = _.template(data);
+				    var html =  template({ foo : "bar" } );
+				    that.$el.html(html); 
 				}, 'html');
 			},
 		    signUp: function( event ){
 				// Button clicked, you can access the element that was clicked with event.currentTarget
-				var data = {firstName:"luke",lastName:"geiken", email: "lgeiken@iastate.edu", password:"Fake.1234", confirmPassword:"Fake.1234"};
+				//var data = {firstName:"luke",lastName:"geiken", email: "lgeiken@iastate.edu+", password:"Fake.1234", confirmPassword:"Fake.1234"};
 				var that = this;
-				console.log(this.new_user);
-				var created_user = new User(this.new_user);
-				var resp = created_user.save(null, {
+				
+				var created_user = new User();
+				created_user.save(this.new_user, {
 				  	type: 'POST',
 				  	success: function (model, response) {
 				  		// Setup user session based on returned model
-				  		var responseText = JSON.parse(response.responseText);
-				  		console.log(responseText);
-				  		// Reroute to the job listing 
+				  		//var responseText = JSON.parse(response.responseText);
+				  		//this.main_user = created_user;
+				  		// Reroute to the job listing
+				  		that.main_user.set(response.model);
+				  		that.app_router.setAuthorized(true);
 						that.app_router.navigate('jobListing',true);
 						$('#signup-modal').closeModal();
 				    },
 				    error: function (model, response) {
 				    	var responseText = JSON.parse(response.responseText);
-				        console.log(responseText.error);
+				        window.alert(responseText.error);
 						
 				    }
 				});
     		},
     		login: function( event ){
-				// Button clicked, you can access the element that was clicked with event.currentTarget
-				var data = {email: "lgeiken@iastate.edu", password:"Fake.1234"}
+				var that = this;
 				
-				this.app_router.navigate('jobListing',true);
-				//var new_user = new User({firstName:"luke",lastName:"geiken", email: "luke.geiken@gmail.com", password:"fake.1234", confirmPassword:"fake.1234"});
-				// var resp = new_user.save(null, {
-				//   	type: 'GET'
-				// });
-				//console.log(resp);
+				var new_login_user = new Login_User();
+				var resp = new_login_user.save(this.login_user, {
+				  	type: 'POST',
+				  	success: function (model, response) {
+				  		//console.log(JSON.stringify(model));
+				  		//console.log(JSON.stringify(response));
+				  		that.main_user.set(that.login_user.attributes);
+				  		that.app_router.setAuthorized(true);
+						that.app_router.navigate('jobListing',true);
+						$('#login-modal').closeModal();
+				    },
+				    error: function (model, response) {
+				    	var responseText = JSON.parse(response.responseText);
+				        window.alert(responseText.error);
+						
+				    }
+				});
 		      
     		},	
-		    changed: function(evt) {
-		       var changed = evt.currentTarget;
+		    updateSignup: function(evt) {
+		       var change_id = evt.currentTarget.id;
 		       var value = $(evt.currentTarget).val();
-		       this.new_user[changed.id] = value;
+		       var data = {};
+		       data[change_id] = value;
+		       this.new_user.set(data);
+		    },
+
+		    updateLogin: function(evt) {
+		       var change_id = evt.currentTarget.id;
+		       var value = $(evt.currentTarget).val();
+		       var data = {};
+		       data[change_id] = value;
+		       this.login_user.set(data);
 		    }
 		});
     }

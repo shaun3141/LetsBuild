@@ -12,6 +12,12 @@ p {
     width:100%;
 }
 
+.add-job-btn {
+    float:left;
+    margin-left:5%;
+    cursor:pointer;
+}
+
 .user-info {
 	float:right;
 	margin-right:5%;
@@ -115,4 +121,8 @@ p {
     font-size: 18px;
     max-width: 360px;
     display: inline-block;   
+}
+
+.dropdown-option {
+    
 }

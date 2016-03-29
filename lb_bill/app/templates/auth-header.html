@@ -2,8 +2,11 @@
   <nav class="top-nav">
       <div class="nav-wrapper teal darken-2">
           <div id="nav-mobile">
+              <div class="add-job-btn">
+                <a class="add-job modal-trigger" href="#add-job-modal" ><i class="fa fa-plus fa-3x"></i></a>
+              </div>
               <div class="user-info">
-                <a class='dropdown-button btn' href='#' data-activates='profile-dropdown'>username</a>
+                <a class='dropdown-button btn' data-activates='profile-dropdown'><%=email.split('@')[0]%></a>
               </div>
           </div>
       </div>
@@ -11,27 +14,71 @@
 </header>
 
 <ul id='profile-dropdown' class='dropdown-content'>
-  <li><a href="#!">username</a></li>
+  <li><a class="dropdown-option modal-trigger" href="#profile-modal"><%=email.split('@')[0]%></a></li>
   <li class="divider"></li>
-  <li><a href="#!">Overview</a></li>
+  <li><a class="dropdown-option modal-trigger" href="#credit-modal">Buy Credits</a></li>
   <li class="divider"></li>
-  <li><a href="#!">Add New Job</a></li>
-  <li class="divider"></li>
-  <li><a href="#!">View Profile / Billing</a></li>
+  <li><a class="dropdown-option" href="#logout">Logout</a></li>
 </ul>
+
+
+<div id="profile-modal" class="modal modal-fixed-footer">
+  <div class="modal-content">
+      <h5>Profile</h5>
+      <li class="divider"></li>
+      <br>
+      <p>(First) (Last)</p>
+      <p><%=email%></p>
+      <p>Credits: (#credits)</p>
+      <br/>
+      <a class="waves-effect teal darken-2 btn change-password">Change Password</a>
+  </div> 
+</div>
+
+<div id="credit-modal" class="modal modal-fixed-footer">
+  <div class="modal-content">
+      <h5>Purchase Credits</h5>
+      <p>Used to purchased emails gather from location scraps</p>
+      <li class="divider"></li>
+      <br>
+      <p>Amount 1</p>
+      <p>Amount 2</p>
+      <p>Amount 3</p>
+      <p>Amount 4</p>
+      <p>Custom Amount</p>
+      <a class="waves-effect teal darken-2 btn paypal-purchase">Paypal Purchase</a>
+  </div> 
+</div>
+
+<div id="add-job-modal" class="modal modal-fixed-footer">
+  <div class="modal-content">
+      <h5>New Job</h5>
+      <p>Select your coordinates to create a square</p>
+      <li class="divider"></li>
+      <br>
+      <p>Lat 1: </p>
+      <p>Lat 2:</p>
+      <p>Long 1: </p>
+      <p>Long 2:</p>
+      <a class="waves-effect teal darken-2 btn create-new-job">Create Job</a>
+  </div> 
+</div>
 
  <script>
  $(document).ready(function() { 
     jQuery.noConflict();
+    $('.tooltipped').tooltip({delay: 50});
+    $('.modal-trigger').leanModal();
     $('.dropdown-button').dropdown({
         inDuration: 300,
         outDuration: 225,
-        constrain_width: false, // Does not change width of dropdown to that of the activator
+        constrain_width: true, // Does not change width of dropdown to that of the activator
         hover: true, // Activate on hover
         gutter: 0, // Spacing from edge
         belowOrigin: false, // Displays dropdown below the button
         alignment: 'left' // Displays dropdown with edge aligned to the left of button
       }
     );
+    
   });
  </script>

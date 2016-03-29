@@ -4,17 +4,19 @@ define(['backbone'],
 		  	initialize: function(){
 				
 			},
-			setRouter: function(router) {
+			setRootScope: function(router, main_user) {
 				this.app_router = router;
+				this.main_user = main_user;
 			},
 			render: function(){
 				var that = this;
 				// Compile the template using underscore
 				var data_to_passed = "Hello";
 				$.get('/templates/home.html', function (data) {
-				    template = _.template(data, { data_to_passed : data_to_passed }); 
-				    that.$el.html(template); 
-				    return that;
+				    var template = _.template(data);
+				    var html =  template({ foo : "bar" } );
+				    that.$el.html(html); 
+				    
 				}, 'html');
 			}
 		});
